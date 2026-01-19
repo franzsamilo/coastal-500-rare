@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import RevealOnScroll from "./RevealOnScroll";
 import CircularGallery from "./CircularGallery";
+import InitiativesMobile from "./InitiativesMobile";
 
 const initiatives = [
   {
@@ -65,9 +66,9 @@ export default function InitiativesSection() {
         </RevealOnScroll>
       </div>
 
-      {/* Full-width Gallery */}
+      {/* Desktop: Circular Gallery */}
       <RevealOnScroll delay={0.2}>
-        <div className="w-full relative z-10">
+        <div className="w-full relative z-10 hidden md:block">
           <CircularGallery
             items={initiatives}
             bend={3}
@@ -77,6 +78,13 @@ export default function InitiativesSection() {
             scrollSpeed={2}
             scrollEase={0.05}
           />
+        </div>
+      </RevealOnScroll>
+
+      {/* Mobile: Vertical Card Layout */}
+      <RevealOnScroll delay={0.2}>
+        <div className="w-full relative z-10 md:hidden">
+          <InitiativesMobile items={initiatives} />
         </div>
       </RevealOnScroll>
     </section>

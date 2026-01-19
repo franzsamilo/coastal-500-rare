@@ -18,6 +18,6 @@ export default function Home() {
       <InteractiveMap />
       <PartnersSection />
       <Footer />
-    </main>
+      </main>
   );
 }

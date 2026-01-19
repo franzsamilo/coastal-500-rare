@@ -16,7 +16,12 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Coastal 500 - Leading the Tide for Coastal Communities",
-  description: "The world's largest global network of mayors committed to thriving coastal communities. Over 500 mayors across the tropics working together for sustainable futures.",
+  description: "The world's largest global network of mayors committed to thriving coastal communities. Over 500 mayors across the tropics working together for sustainable futures",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

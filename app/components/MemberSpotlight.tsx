@@ -19,7 +19,7 @@ interface Member {
 
 const memberData: Member[] = [
   {
-    image: "https://images.unsplash.com/photo-1562904403-a5106bef8319?q=100&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/image1.jpg",
     title: "Mayor Sarah Chen",
     subtitle: "Bali, Indonesia",
     handle: "Coastal Leader",
@@ -29,7 +29,7 @@ const memberData: Member[] = [
     quote: "Building resilient coastal communities through sustainable practices and community engagement."
   },
   {
-    image: "https://plus.unsplash.com/premium_photo-1661752215895-c0bcaf368b78?q=100&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/image2.jpg",
     title: "Mayor Maria Rodriguez",
     subtitle: "Cartagena, Colombia",
     handle: "Sustainability Advocate",
@@ -39,7 +39,7 @@ const memberData: Member[] = [
     quote: "Protecting our oceans means protecting our future. Every action counts."
   },
   {
-    image: "https://images.unsplash.com/photo-1723221906960-1c5a5febc9c3?w=1200&auto=format&fit=crop&q=100&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bmlnZXJpYW4lMjBtYW58ZW58MHx8MHx8fDA%3D",
+    image: "/image3.jpg",
     title: "Mayor James Okonkwo",
     subtitle: "Lagos, Nigeria",
     handle: "Climate Champion",
@@ -49,7 +49,7 @@ const memberData: Member[] = [
     quote: "Empowering local communities to lead the fight against climate change."
   },
   {
-    image: "https://plus.unsplash.com/premium_photo-1661774991416-ee14a1bc0d30?w=1200&auto=format&fit=crop&q=100&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8a29yZWFuJTIwbWFufGVufDB8fDB8fHww",
+    image: "/image4.jpg",
     title: "Mayor David Kim",
     subtitle: "Busan, South Korea",
     handle: "Marine Conservationist",
@@ -59,7 +59,7 @@ const memberData: Member[] = [
     quote: "Innovation and tradition working together to preserve our marine ecosystems."
   },
   {
-    image: "https://images.unsplash.com/photo-1720670751137-019756ac8414?w=1200&auto=format&fit=crop&q=100&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGJyYXppbGlhbiUyMHdvbWFufGVufDB8fDB8fHww",
+    image: "/image5.jpg",
     title: "Mayor Ana Silva",
     subtitle: "Recife, Brazil",
     handle: "Community Builder",
@@ -69,7 +69,7 @@ const memberData: Member[] = [
     quote: "Connecting communities across borders to create lasting environmental impact."
   },
   {
-    image: "https://images.unsplash.com/photo-1683049621511-5eb772204bc4?w=1200&auto=format&fit=crop&q=100&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGZpbGlwaW5vJTIwbWFufGVufDB8fDB8fHww",
+    image: "/image6.jpg",
     title: "Mayor Carlos Mendez",
     subtitle: "Manila, Philippines",
     handle: "Ocean Protector",
@@ -83,35 +83,51 @@ const memberData: Member[] = [
 export default function MemberSpotlight() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const AUTO_SCROLL_INTERVAL = 8000; // 8 seconds - slower and more comfortable
 
   useEffect(() => {
-    // Auto-scroll every 5 seconds
+    if (isPaused) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    // Start auto-scroll
     intervalRef.current = setInterval(() => {
       setDirection(1);
       setCurrentIndex((prev) => (prev + 1) % memberData.length);
-    }, 5000);
+    }, AUTO_SCROLL_INTERVAL);
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, []);
+  }, [isPaused]);
 
   const goToSlide = (index: number) => {
     if (index !== currentIndex) {
       setDirection(index > currentIndex ? 1 : -1);
       setCurrentIndex(index);
-      // Reset auto-scroll timer
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      intervalRef.current = setInterval(() => {
-        setDirection(1);
-        setCurrentIndex((prev) => (prev + 1) % memberData.length);
-      }, 5000);
+      // Pause auto-scroll briefly after manual navigation, then resume
+      setIsPaused(true);
+      setTimeout(() => {
+        setIsPaused(false);
+      }, AUTO_SCROLL_INTERVAL); // Wait full interval before resuming
     }
+  };
+
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
   };
 
   const currentMember = memberData[currentIndex];
@@ -120,7 +136,7 @@ export default function MemberSpotlight() {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
       opacity: 0,
-      scale: 0.8
+      scale: 0.95
     }),
     center: {
       x: 0,
@@ -130,7 +146,7 @@ export default function MemberSpotlight() {
     exit: (direction: number) => ({
       x: direction > 0 ? -1000 : 1000,
       opacity: 0,
-      scale: 0.8
+      scale: 0.95
     })
   };
 
@@ -159,7 +175,11 @@ export default function MemberSpotlight() {
         </RevealOnScroll>
 
         {/* Carousel Container */}
-        <div className="relative">
+        <div 
+          className="relative"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
@@ -169,9 +189,9 @@ export default function MemberSpotlight() {
               animate="center"
               exit="exit"
               transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.3 },
-                scale: { duration: 0.3 }
+                x: { type: "spring", stiffness: 200, damping: 25, duration: 0.6 },
+                opacity: { duration: 0.4 },
+                scale: { duration: 0.4 }
               }}
               className="relative"
             >
@@ -183,24 +203,27 @@ export default function MemberSpotlight() {
                   transition={{ delay: 0.2, duration: 0.6 }}
                   className="relative"
                 >
-                  <div className="relative aspect-square max-w-lg mx-auto">
+                  <div className="relative aspect-square max-w-lg mx-auto w-full">
                     {/* Gradient border effect */}
                     <div
-                      className="absolute inset-0 rounded-3xl blur-xl opacity-50"
+                      className="absolute inset-0 rounded-3xl blur-xl opacity-50 z-0"
                       style={{ background: currentMember.gradient }}
                     />
-                    <div className="relative rounded-3xl overflow-hidden border-4 border-white shadow-2xl">
-                      <Image
-                        src={currentMember.image}
-                        alt={currentMember.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                        priority
-                        quality={95}
-                      />
+                    <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-white shadow-2xl bg-zinc-100">
+                      <div className="absolute inset-0 w-full h-full">
+                        <Image
+                          src={currentMember.image}
+                          alt={currentMember.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                          priority={currentIndex === 0}
+                          quality={95}
+                          unoptimized={true}
+                        />
+                      </div>
                       {/* Overlay gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10 pointer-events-none" />
                     </div>
                   </div>
                 </motion.div>
@@ -284,13 +307,15 @@ export default function MemberSpotlight() {
 
           {/* Progress Bar */}
           <div className="mt-6 h-1 bg-zinc-200 rounded-full overflow-hidden max-w-md mx-auto">
-            <motion.div
-              key={currentIndex}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 5, ease: "linear" }}
-              className="h-full bg-gradient-to-r from-[#00A8A8] to-[#002A4E]"
-            />
+            {!isPaused && (
+              <motion.div
+                key={currentIndex}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: AUTO_SCROLL_INTERVAL / 1000, ease: "linear" }}
+                className="h-full bg-gradient-to-r from-[#00A8A8] to-[#002A4E]"
+              />
+            )}
           </div>
         </div>
       </div>
